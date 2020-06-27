@@ -13,10 +13,18 @@ import Fields from './Fields'
 import { DatePicker } from "jalali-react-datepicker";
 
 import Combo from './Combo'
+import { wait } from '@testing-library/react'
 
 export class Dashboard extends Component {
 
     state = {
+        contactAddCheck : false , 
+        contactMessage : '' ,
+        itemAddCheck : false ,
+        itemMessage : '' ,
+        checkMessage : false ,
+        messagetext : "",
+        forceItemUpdate : false ,
         addNewContact : false ,
         addNewItem : false ,
         newContactPhone : '',
@@ -96,6 +104,32 @@ export class Dashboard extends Component {
                 ))
                 console.log(data)
                 this.setState({users : data})
+                let fetch = data[1].phone
+
+
+                
+                this.setState({ loading : true})
+                const responsee = axios.get('http://app.bazarsefid.com/api/Administrator/GetUserUndoneFactors' , { params : {
+                    phone : fetch
+                } ,
+                    headers :{
+                Authorization : 'Bearer ' + sessionStorage.getItem('token')
+                }}).then(response => {
+                    console.log(response.data)
+                    
+                    
+                   this.setState({factors :response.data })
+    
+    
+    
+                    this.setState({loading : false})
+                })
+
+
+
+
+
+
             })
         }
 
@@ -123,39 +157,7 @@ export class Dashboard extends Component {
         }
 
 
-        fetchFactor = () => 
-        {
-            console.log(this.state.selectedUserPhone)
-            this.setState({ loading : true})
-            const response = axios.get('http://app.bazarsefid.com/api/Administrator/GetUserUndoneFactors' , { params : {
-                phone : this.state.selectedUserPhone
-            } ,
-                headers :{
-            Authorization : 'Bearer ' + sessionStorage.getItem('token')
-            }}).then(response => {
-                console.log(response.data)
-                
-                
-               this.setState({factors :response.data })
-
-
-
-                this.setState({loading : false})
-
-                
-
-                
-                
-
-                
-                
-                
-                
-                
-            })
-
-        }
-
+       
 
 
 
@@ -266,14 +268,20 @@ export class Dashboard extends Component {
    
 
 
-        endOfFactor = (e)=>{
+        endOfFactor = async (e)=>{
             this.setState({endOfFactorClicked : true})
             console.log(this.state.factorData)
-            axios.post('http://app.bazarsefid.com/api/Administrator/SubmitUserFactor' , this.state.factorData , { headers: {
+            await axios.post('http://app.bazarsefid.com/api/Administrator/SubmitUserFactor' , this.state.factorData , { headers: {
                 Authorization : 'Bearer ' + sessionStorage.getItem('token')
             }}).then(response => {
-                console.log(response)
+                console.log('this is the response from submiting' ,response)
                 this.setState({endOfFactorClicked: false})
+                this.setState({endOfFactor : true})
+                if(response.status ==200)
+                {
+                    this.setState({checkMessage : true})
+                    this.setState({messagetext : 'factor submited !!!'})
+                }
             })
             
         }
@@ -283,6 +291,37 @@ export class Dashboard extends Component {
 
         selectUsers = (e) => {
             
+            
+            this.setState({factors : []})
+            console.log(e.target.value)
+            this.setState({ loading : true})
+            const response = axios.get('http://app.bazarsefid.com/api/Administrator/GetUserUndoneFactors' , { params : {
+                phone : e.target.value
+            } ,
+                headers :{
+            Authorization : 'Bearer ' + sessionStorage.getItem('token')
+            }}).then(response => {
+                console.log(response.data)
+                
+                
+               this.setState({factors :response.data })
+
+
+
+                this.setState({loading : false})
+
+                
+
+                
+                
+
+                
+                
+                
+                
+                
+            })
+
             this.setState({selectedUserPhone : e.target.value})
             
         }
@@ -310,9 +349,12 @@ export class Dashboard extends Component {
             headers : {Authorization : 'Bearer ' + sessionStorage.getItem('token')}}).then(response => {
                 if(response.status == 200)
                 {
+                    this.setState({itemAddCheck :true})
+                    this.setState({itemMessage : 'item Added ....'})
                     let factoritem = this.state.factorItem 
                     this.setState({factorItem : factoritem })
                     this.setState({addNewItem : false})
+                    this.setState({forceItemUpdate : true})
                 }
             })
         }
@@ -337,10 +379,14 @@ export class Dashboard extends Component {
                 console.log(response)
                 if(response.status == 200) 
                 {
+                this.setState({contactAddCheck : true})
+                this.setState({contactMessage : 'User Added ...'})
                 let contactOptions = this.state.contactOptions
                 contactOptions.push(<option value = {response.data.id}>{response.data.name}</option>)
                 this.setState({contactOptions : contactOptions})
                 this.setState({addNewContact : false})
+                
+                
                 }
             })
 
@@ -361,6 +407,14 @@ export class Dashboard extends Component {
             backgroundColor : '#8A2BE2'
         }
 
+
+
+        closeAlert = () => {
+            this.setState({checkMessage : false})
+            this.setState({itemAddCheck : false})
+            this.setState({contactAddCheck : false})
+        }
+
      render() {
       
         
@@ -372,6 +426,26 @@ export class Dashboard extends Component {
            
                
         <div>
+            {this.state.checkMessage && <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Warning!</strong> {this.state.messagetext}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close" onClick ={this.closeAlert}>
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>}
+
+                        {this.state.itemAddCheck && <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Success!</strong> {this.state.itemMessage}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close" onClick ={this.closeAlert}>
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>}   
+
+                         {this.state.contactAddCheck && <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Success!</strong> {this.state.contactMessage}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close" onClick ={this.closeAlert}>
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>}         
                 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" integrity="sha384-Bfad6CLCknfcloXFOyFnlgtENryhrpZCe29RTifKEixXQZ38WheV+i/6YWSzkz3V" crossorigin="anonymous" type="text/css"></link>
 
                 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"></link>
@@ -379,14 +453,7 @@ export class Dashboard extends Component {
                     
                         
                     
-                    <div className = 'col-5'>
-                        <div className='card' >
-                            <label for = 'select'>Select User :</label>
-                            <select name = "select" id = "contacts"  onChange = {this.selectUsers} className = "form-control">
-                                {this.state.usersOption}
-                            </select>
-                        </div>
-                    </div>
+                    
                     <div className= 'col-5'>
 
                     </div>
@@ -398,7 +465,7 @@ export class Dashboard extends Component {
                     <div className = "col-5">
                         <button className= "btn btn-primary btn-block" id ="box" onClick={this.Box} disabled = {this.state.makeFactor} style = {this.backgroundColor}>Make Factor</button>
                          {this.state.makeFactor && <button  className= "btn btn-primary "  onClick = {this.addItem} style = {this.backgroundColor}>+</button>}
-                         <Fields Items = {this.state.factorItem} setItem ={this.setItem}></Fields>
+                         <Fields Items = {this.state.factorItem} setItem ={this.setItem} bool = {this.state.forceItemUpdate}></Fields>
                          {this.state.endOfFactor && <select name = "select" id ='items' className = "form-control" onChange = {this.selectContact} >
                                     {this.state.contactOptions}
                                 </select>}
@@ -425,10 +492,14 @@ export class Dashboard extends Component {
                     </div>
 
                     <div className = "col-2">
-                    <button type="button" className="btn btn-primary btn-block" id = "fetch" onClick = {this.fetchFactor} disabled = {this.state.loading} style = {this.backgroundColor}>
-                        {this.state.loading && (<i className ="fa fa-refresh fa-spin"></i>)}
-                            Fetch Undone Factors
-                        </button>
+                    
+                        <div className='card' >
+                            <label for = 'select'>Select User :</label>
+                            <select name = "select" id = "contacts"  onChange = {this.selectUsers} className = "form-control">
+                                {this.state.usersOption}
+                            </select>
+                        </div>
+                   
                         
                         <FactorGrid factors = {this.state.factors}  showFactor = {this.showFactor} className = 'form-control'></FactorGrid>
                     </div>
