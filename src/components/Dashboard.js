@@ -101,26 +101,7 @@ export class Dashboard extends Component {
             response.data.map((user) => (data.push(user)))
             console.log(data)
             this.setState({users: data})
-            let fetch = data[1].phone
-
-
-            this.setState({loading: true})
-            const responsee = axios.get('http://app.bazarsefid.com/api/Administrator/GetUserUndoneFactors', {
-                params: {
-                    phone: fetch
-                },
-                headers: {
-                    Authorization: 'Bearer ' + sessionStorage.getItem('token')
-                }
-            }).then(response => {
-                console.log(response.data)
-
-
-                this.setState({factors: response.data})
-
-
-                this.setState({loading: false})
-            })
+           
 
 
         })
@@ -465,7 +446,7 @@ export class Dashboard extends Component {
                                     width: "60%",
                                     marginLeft: "20px"
                                 }
-                        }></select>
+                            } onChange = {this.selectUsers}>{this.state.usersOption}</select>
                     </div>
 
                     <div className="form-inline">
@@ -482,80 +463,13 @@ export class Dashboard extends Component {
                             {borderLeft: "1px solid #660099"}
                     }>
                         <div class="sticky-top">
-                            <ul className="nav flex-column"
-                                style={
-                                    {
-                                        float: "right",
-                                        direction: "rtl",
-                                        listStyle: "none"
+                        <FactorGrid factors={
+                                        this.state.factors
                                     }
-                            }>
-                                <li className="nav-item">esme factor hro injori bekesh biar inja</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                                <li className="nav-item"
-                                    style={
-                                        {textAlign: "right"}
-                                }>aref</li>
-                            </ul>
+                                    showFactor={
+                                        this.showFactor
+                                    }
+                                    className='form-control'></FactorGrid>
                         </div>
                     </div>
 
@@ -652,35 +566,13 @@ export class Dashboard extends Component {
                                 }>End Of Factor</button>
                             } </div>
 
-                            <div className="col-5">
+                            <div className="col-7">
                                 <ImageGrid images={
                                     this.state.images
                                 }></ImageGrid>
                             </div>
 
-                            <div className="col-2">
-
-                                <div className='card'>
-                                    <label for='select'>Select User :</label>
-                                    <select name="select" id="contacts"
-                                        onChange={
-                                            this.selectUsers
-                                        }
-                                        className="form-control">
-                                        {
-                                        this.state.usersOption
-                                    } </select>
-                                </div>
-
-
-                                <FactorGrid factors={
-                                        this.state.factors
-                                    }
-                                    showFactor={
-                                        this.showFactor
-                                    }
-                                    className='form-control'></FactorGrid>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
