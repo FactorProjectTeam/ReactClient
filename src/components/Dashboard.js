@@ -101,7 +101,6 @@ export class Dashboard extends Component {
             response.data.map((user) => (data.push(user)))
             console.log(data)
             this.setState({users: data})
-           
 
 
         })
@@ -446,7 +445,13 @@ export class Dashboard extends Component {
                                     width: "60%",
                                     marginLeft: "20px"
                                 }
-                            } onChange = {this.selectUsers}>{this.state.usersOption}</select>
+                            }
+                            onChange={
+                                this.selectUsers
+                        }>
+                            {
+                            this.state.usersOption
+                        }</select>
                     </div>
 
                     <div className="form-inline">
@@ -460,17 +465,23 @@ export class Dashboard extends Component {
                 }>
                     <div class="col-3 order-2" id="sticky-sidebar"
                         style={
-                            {borderLeft: "1px solid #660099"}
+                            {
+                                borderLeft: "1px solid #660099",
+                                paddingRight: "30px"
+                            }
                     }>
-                        <div class="sticky-top">
-                        <FactorGrid factors={
-                                        this.state.factors
-                                    }
-                                    showFactor={
-                                        this.showFactor
-                                    }
-                                    className='form-control'></FactorGrid>
-                        </div>
+                        <ul class="sticky-top list-group"
+                            style={
+                                {paddingTop: "10px"}
+                        }>
+                            <FactorGrid factors={
+                                    this.state.factors
+                                }
+                                showFactor={
+                                    this.showFactor
+                                }
+                                className='form-control'></FactorGrid>
+                        </ul>
                     </div>
 
                     <div className="col-9">
@@ -572,7 +583,7 @@ export class Dashboard extends Component {
                                 }></ImageGrid>
                             </div>
 
-                            
+
                         </div>
                     </div>
                 </div>
